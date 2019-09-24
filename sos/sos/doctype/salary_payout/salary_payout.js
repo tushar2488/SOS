@@ -3,9 +3,11 @@
 
 frappe.ui.form.on('Salary Payout', {
 	onload: function(frm) {
-        if(frm.doc.bank_name && frm.doc.start_date && frm.doc.end_date){
-            frm.set_value("bank_name",'');
-            frm.refresh_field("bank_name");
+	    if(frm.doc.docstatus==0) {
+            if(frm.doc.bank_name && frm.doc.start_date && frm.doc.end_date){
+                frm.set_value("bank_name",'');
+                frm.refresh_field("bank_name");
+            }
         }
 	},
 	refresh: function(frm) {
