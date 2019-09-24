@@ -2,29 +2,45 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on('Salary Payout', {
-	refresh: function(doc, dt, dn) {
-		var me = this;
-		if(cur_frm.doc.docstatus==1) {
-			doc.add_custom_button(__('Make Bank Entry'),function() { me.make_bank_payment(doc, dt, dn) });
+	refresh: function(frm) {
+		if(frm.doc.docstatus==0) {
+            //frm.page.clear_primary_action();
+            frm.add_custom_button(__("Get Salary Details"),
+                function() {
+                    frm.events.get_salary_slip_data(frm);
+                }
+            ).toggleClass('btn-primary', !(frm.doc.empdata || []).length);
 		}
 	},
+	clear_employee_payout_table: function (frm) {
+		frm.clear_table('empdata');
+		frm.refresh();
+	},
 	start_date: function(frm) {
-		frm.set_value("bank_name",'');
+		frm.events.clear_employee_table(frm);
 	},
 	end_date: function(frm) {
-		frm.set_value("bank_name",'');
+		frm.events.clear_employee_table(frm);
 	},
 	bank_name: function(frm) {
-		//frappe.msgprint("Selected Bank is : "+frm.doc.bank_name);
-		frm.set_value("payment_account",'');
-		frm.events.get_salary_slip_data(frm);
+		frm.events.clear_employee_table(frm);
 	},
-
 	get_salary_slip_data: function(frm) {
+	    return frappe.call({
+			doc: frm.doc,
+			method: 'get_employees_salary_details',
+			callback: function(r) {
+				if (r.docs[0].empdata){
+					frm.save();
+					frm.refresh();
+                }
+            }
+        });
+    }
 		//frm.events.check_mandatory_to_fetch(frm);
-		if(frm.doc.start_date != null && frm.doc.start_date != null && frm.doc.start_date < frm.doc.end_date){
+		/*if(frm.doc.start_date != null && frm.doc.start_date != null && frm.doc.start_date < frm.doc.end_date){
 			frappe.call({
-				method: "sos.sos.doctype.salary_payout.salary_payout.salary_slip_data",
+				method: "salary_slip_data",
 				args: {
 					"bank_name": frm.doc.bank_name,
 					"start_date": frm.doc.start_date,
@@ -37,7 +53,7 @@ frappe.ui.form.on('Salary Payout', {
 						var total_val=0;
 							$.each(r.message, function(i, d) {
 							var row = frappe.model.add_child(frm.doc, "Salary Payout Detail", "empdata");
-		            					row.employee = d.employee;
+		            			row.employee = d.employee;
 								row.employee_name = d.employee_name;
 								row.ifsc_code = d.ifsc_code;
 								row.bank_ac_no = d.bank_ac_no;
@@ -62,25 +78,5 @@ frappe.ui.form.on('Salary Payout', {
 		}else{
 			frappe.msgprint("Select valid Start date and End date");
 		}
-	}	
+	}	*/
 });
-make_bank_payment = function(doc, cdt, cdn) {
-	console.log("@@@@@ make_bank_payment:::::")
-
-	if (cur_frm.doc.company && cur_frm.doc.start_date && cur_frm.doc.end_date) {
-		return cur_frm.call({
-			//doc: doc,
-			method: "make_bank_payment_entry",
-			doc: cur_frm.doc,
-			callback: function (r) {
-				if (r.message)
-					var doc = frappe.model.sync(r.message)[0];
-					frappe.set_route("Form", doc.doctype, doc.name);
-				}
-			});
-			console.log("@@@@@ Empdata:::::",doc.empdata.length)
-
-		} else {
-				frappe.msgprint(__("Company, From Date and To Date is mandatory"));
-	}
-}
