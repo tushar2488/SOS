@@ -2,6 +2,12 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on('Salary Payout', {
+	onload: function(frm) {
+        if(frm.doc.bank_name && frm.doc.start_date && frm.doc.end_date){
+            frm.set_value("bank_name",'');
+            frm.refresh_field("bank_name");
+        }
+	},
 	refresh: function(frm) {
 		if(frm.doc.docstatus==0) {
             //frm.page.clear_primary_action();
@@ -17,13 +23,13 @@ frappe.ui.form.on('Salary Payout', {
 		frm.refresh();
 	},
 	start_date: function(frm) {
-		frm.events.clear_employee_table(frm);
+		frm.events.clear_employee_payout_table(frm);
 	},
 	end_date: function(frm) {
-		frm.events.clear_employee_table(frm);
+		frm.events.clear_employee_payout_table(frm);
 	},
 	bank_name: function(frm) {
-		frm.events.clear_employee_table(frm);
+		frm.events.clear_employee_payout_table(frm);
 	},
 	get_salary_slip_data: function(frm) {
 	    return frappe.call({
