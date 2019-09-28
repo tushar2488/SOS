@@ -1,0 +1,78 @@
+<style>
+#table_head1,table_head2 td {
+    padding: 4px !important;
+}
+</style>
+<div>
+    <p>To,<br>Branch Manager,<br>Bank Of India, Juhu Tara Road, Mumbai</p>
+
+    <table id="table_head1" border="1" width="100%">
+        <tbody>
+            <tr>
+                <td colspan="2" width="100%" align="left">Please Debit Current Account: <b>_________________________</b> and Credit the A/C of the following Employee of our Company <b>{{ doc.company }}</b></td>
+            </tr>
+            <tr>
+                <td width="50%">
+                    <p>From : <small><b>{{frappe.utils.formatdate(doc.start_date, 'dd-MM-YYYY')}}</b></small>
+                    To : <small><b>{{frappe.utils.formatdate(doc.end_date, 'dd-MM-YYYY')}}</b></small></p>
+                </td>
+
+                <td width="40%">
+                    <p>Mobile No. :<b> +91-9321179937</b></p>
+                </td>
+
+            </tr>
+            <tr>
+                <td width="60%">
+                    <p>Cheque No. :</p>
+                </td>
+
+                <td width="40%">
+                    <p>Date :</p>
+                </td>
+
+            </tr>
+        </tbody>
+    </table>
+    <br>
+    <table id="table_head2" border="1" width="100%">
+        <tbody>
+            <tr><th>Sr.#</th>
+                <th class="text-center">Employee ID</th>
+                <th class="text-center">Employee Name</th>
+                <th class="text-center">Net Pay</th>
+                <th class="text-center">Account No.</th>
+            </tr>
+            {%- for row in doc.empdata -%}
+            <tr>
+                <td style="width: 6%;">{{ row.idx }}</td>
+                <td style="width: 14%;">{{ row.employee }}</td>
+                <td style="width: 39%;">
+                <div style="border: 0px;">{{ row.employee_name }}</div>
+                </td>
+                <td style="width: 21%; text-align: right;">{{ row.get_formatted("rounded_total", doc) }}</td>
+                <td style="width: 21%; text-align: center;"><b>{{ row.bank_ac_no }}</b></td>
+            </tr>
+            {%- endfor -%}
+            <tr>
+                <td style="width: 85%;" colspan="3"><b>{{ doc.total_in_words }} </b></td>
+                <td style="width: 15%; text-align: right;"><b> Total : {{ doc.get_formatted("total", doc) }}</b></td>
+                <td style="width: 85%;text-align: right;"></td>
+            </tr>
+        </tbody>
+    </table>
+    <br>
+</div>
+
+<div>
+	<p align="left">We declare that the account of the beneficiaries mentioned in the hard copy and that the bank is not responsible for any mistake between the hard copy</p>
+</div>
+
+<div>
+	<table style="width:100%">
+		  <tr>
+			    <td style="width:60%"></td>
+			    <td align="left"><h6><b>Please credit the respective accounts <br>Thanking You<br> For</b></h6></td>
+		  </tr>
+	</table>
+</div>
